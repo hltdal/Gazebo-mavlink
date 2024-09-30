@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>568</height>
+    <width>1035</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,12 +65,26 @@
             </property>
            </widget>
           </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QPushButton" name="emergency_button">
+            <property name="text">
+             <string>Emergency</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item alignment="Qt::AlignHCenter">
-           <widget class="QLineEdit" name="takeoff_lineEdit"/>
+           <widget class="QLineEdit" name="takeoff_altitude_lineEdit">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="placeholderText">
+             <string>Altitude</string>
+            </property>
+           </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
            <widget class="QPushButton" name="takeoff_button">
@@ -80,16 +94,52 @@
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="swarm_move_button">
+           <widget class="QPushButton" name="land_button">
             <property name="text">
-             <string>Swarm Move</string>
+             <string>Land</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="move_position_x_lineEdit">
+              <property name="placeholderText">
+               <string>X</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="move_position_y_lineEdit">
+              <property name="placeholderText">
+               <string>Y</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="move_position_z_lineEdit">
+              <property name="placeholderText">
+               <string>Z</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLineEdit" name="move_velocity_lineEdit">
+            <property name="placeholderText">
+             <string>Velocity</string>
             </property>
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="land_button">
+           <widget class="QPushButton" name="swarm_move_button">
             <property name="text">
-             <string>Land</string>
+             <string>Swarm Move</string>
             </property>
            </widget>
           </item>
@@ -173,7 +223,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>750</width>
+     <width>1035</width>
      <height>22</height>
     </rect>
    </property>
