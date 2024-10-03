@@ -259,7 +259,6 @@ class LauncherAppFunctions(QMainWindow):
                     self.drone3_lat = msg.lat / 1e7  # Enlem
                     self.drone3_lon = msg.lon / 1e7  # Boylam
                     self.drone3_alt = msg.relative_alt / 1000  # Yükseklik (metre cinsinden)
-                    
                     # PyQt5 arayüzündeki etiketi güncelle
                     self.main.drone3_position_label.setText(f"3. Drone Pozisyonu: \nLatitude={self.drone3_lat}, \nLongitude={self.drone3_lon}, \nAltitude={self.drone3_alt} m")
                 time.sleep(0.01)  # 1 saniye bekle
@@ -272,17 +271,25 @@ class LauncherAppFunctions(QMainWindow):
             drone.mav.send(
                 drone.mav.set_position_target_global_int_encode(
                     0,  # time_boot_ms (geçerli zaman)
-                    #drone.target_system,  # hedef sistem
-                    0,
-                    #drone.target_component,  # hedef komponent
-                    0,
+                    drone.target_system,  # hedef sistem
+                    drone.target_component,  # hedef komponent
                     mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,  # Küresel çerçeve (irtifa göreceli)
                     0b0000111111111000,
                     int(lat*1e7), int(lon*1e7), alt,  # Hedef enlem (10^7 ölçeğinde), boylam (10^7 ölçeğinde) ve irtifa (m)
-                    v, v, v,  # Hedef hız (X, Y, Z eksenlerinde m/s cinsinden)
+                    0, 0, 0,  # Hedef hız (X, Y, Z eksenlerinde m/s cinsinden)
                     0, 0, 0,  # Hızlanma hedefi yok
                     0, 0  # Yaw ve Yaw hız hedefi yok
                 )
+            )
+            drone.mav.command_long_send(
+                drone.target_system,
+                drone.target_component,
+                mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
+                0,
+                0,  
+                v, 
+                0,  
+                0, 0, 0, 0 
             )
         except Exception as e:
             print(f"Pozisyon gönderilirken bir hata oluştu: {e}")
