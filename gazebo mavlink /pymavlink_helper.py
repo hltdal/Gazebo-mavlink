@@ -62,3 +62,30 @@ class MavlinkHelper:
             vz = msg.vz  # Z eksenindeki hız
             print(f"Velocity X: {vx} m/s, Y: {vy} m/s, Z: {vz} m/s")
 
+    def position_target(self, drone, lat, lon, alt):
+        # Send position target
+        drone.mav.send(
+                drone.mav.set_position_target_global_int_encode(
+                    0,  # time_boot_ms (geçerli zaman)
+                    drone.target_system,  # hedef sistem
+                    drone.target_component,  # hedef komponent
+                    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,  # Küresel çerçeve (irtifa göreceli)
+                    0b0000111111111000,
+                    int(lat*1e7), int(lon*1e7), alt,  # Hedef enlem (10^7 ölçeğinde), boylam (10^7 ölçeğinde) ve irtifa (m)
+                    0, 0, 0,  # Hedef hız (X, Y, Z eksenlerinde m/s cinsinden)
+                    0, 0, 0,  # Hızlanma hedefi yok
+                    0, 0  # Yaw ve Yaw hız hedefi yok
+                )
+            )
+
+    def set_velocity(self, drone, v):
+        drone.mav.command_long_send(
+                drone.target_system,
+                drone.target_component,
+                mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
+                0,
+                0,  
+                v, 
+                0,  
+                0, 0, 0, 0 
+            )

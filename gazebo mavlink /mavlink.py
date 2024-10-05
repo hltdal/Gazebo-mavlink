@@ -116,19 +116,6 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Drone'lar ileri hareket ettirilirken bir hata oluştu: {e}")
 
-    def continually_update_position(self):
-        # Drone pozisyonlarını güncellemek için iş parçacıkları oluştur
-        thread1 = threading.Thread(target=self.update_position_drone1)
-        thread2 = threading.Thread(target=self.update_position_drone2)
-        thread3 = threading.Thread(target=self.update_position_drone3)
-        thread4 = threading.Thread(target=self.get_velocity_and_acceleration)
-
-        # İş parçacıklarını başlat
-        thread1.start()
-        thread2.start()
-        thread3.start()
-        thread4.start()
-
     def get_velocity_and_acceleration(self):
         while True:
             for drone in [self.drone1, self.drone2, self.drone3]:
@@ -187,32 +174,24 @@ class LauncherAppFunctions(QMainWindow):
     def send_position_target(self, drone, lat, lon, alt,v):
         try:
             # Hedef pozisyon ve hız komutu gönderme
-            drone.mav.send(
-                drone.mav.set_position_target_global_int_encode(
-                    0,  # time_boot_ms (geçerli zaman)
-                    drone.target_system,  # hedef sistem
-                    drone.target_component,  # hedef komponent
-                    mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,  # Küresel çerçeve (irtifa göreceli)
-                    0b0000111111111000,
-                    int(lat*1e7), int(lon*1e7), alt,  # Hedef enlem (10^7 ölçeğinde), boylam (10^7 ölçeğinde) ve irtifa (m)
-                    0, 0, 0,  # Hedef hız (X, Y, Z eksenlerinde m/s cinsinden)
-                    0, 0, 0,  # Hızlanma hedefi yok
-                    0, 0  # Yaw ve Yaw hız hedefi yok
-                )
-            )
-            drone.mav.command_long_send(
-                drone.target_system,
-                drone.target_component,
-                mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
-                0,
-                0,  
-                v, 
-                0,  
-                0, 0, 0, 0 
-            )
+            self.pymavlink_helper.position_target(drone, lat, lon, alt)
+            self.pymavlink_helper.set_velocity(drone, v)
         except Exception as e:
             print(f"Pozisyon gönderilirken bir hata oluştu: {e}")
     
+    def continually_update_position(self):
+        # Drone pozisyonlarını güncellemek için iş parçacıkları oluştur
+        thread1 = threading.Thread(target=self.update_position_drone1)
+        thread2 = threading.Thread(target=self.update_position_drone2)
+        thread3 = threading.Thread(target=self.update_position_drone3)
+        thread4 = threading.Thread(target=self.get_velocity_and_acceleration)
+
+        # İş parçacıklarını başlat
+        thread1.start()
+        thread2.start()
+        thread3.start()
+        thread4.start()
+
     def run_in_new_terminal(self, command):
         try:
             subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {self.working_directory} && {command}; exec bash'])
