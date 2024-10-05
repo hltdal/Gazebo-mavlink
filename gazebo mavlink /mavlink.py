@@ -7,15 +7,16 @@ from nav_msgs.msg import Odometry
 from design import Ui_MainWindow
 from PyQt5.QtWidgets import *
 from geometry_msgs.msg import PoseStamped
-# Import mavutil
 from pymavlink import mavutil
 import math
+from pymavlink_helper import MavlinkHelper
 
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
         super().__init__()
         self.main = Ui_MainWindow()
+        self.pymavlink_helper = MavlinkHelper()
         self.main.setupUi(self)
         self.working_directory = "~"
         
@@ -23,7 +24,6 @@ class LauncherAppFunctions(QMainWindow):
         self.main.run_simulation_button.clicked.connect(self.launch_simulation)
         self.main.start_multisitl_button.clicked.connect(self.start_multisitl)
         self.main.arm_button.clicked.connect(self.arm_function)
-        self.main.takeoff_button.clicked.connect(self.get_takeoff_text)
         self.main.takeoff_button.clicked.connect(self.take_off_function)
         self.main.land_button.clicked.connect(self.land_function)
         self.main.disarm_button.clicked.connect(self.disarm_function)
@@ -37,6 +37,7 @@ class LauncherAppFunctions(QMainWindow):
     def start_multisitl(self):
         command = "./multi_sitl.sh"
         self.run_in_new_terminal(command)
+        #Drone ları class olarak tanımladıktan sonra bağlantı komutlarını da pymavlink_helper'da çalıştıracaksın
         self.drone1 = mavutil.mavlink_connection('127.0.0.1:14550')
         self.drone1.wait_heartbeat()
         print("Drone1 bağlandı")
@@ -47,73 +48,48 @@ class LauncherAppFunctions(QMainWindow):
         self.drone3.wait_heartbeat()
         print("Drone3 bağlandı")
         self.continually_update_position()
-        #self.continually_check_drone_state()
 
     def arm_function(self):
         try:
             for drone in [self.drone1, self.drone2, self.drone3]:
-                drone.set_mode("GUIDED")  # GUIDED modunu seç
-                print("Drone GUIDED moduna geçiyor...")
-            for drone in [self.drone1, self.drone2, self.drone3]:
-                # Arm the vehicle
-                drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0,
-                    1, 0, 0, 0, 0, 0, 0)
-                # wait until arming confirmed
-                #drone.motors_armed_wait()
-                #print('Drone armed!')
+                self.pymavlink_helper.arm(drone) #Drone is in GUİDED mode and armed
         except Exception as e:
             print(f"Komut çalıştırılırken bir hata oluştu: {e}")
     
-    def get_takeoff_text(self):
-        self.takeoff_value=self.main.takeoff_altitude_lineEdit.text()
-        #self.takeoff_velocity=self.main.takeoff_velocity_lineEdit.text()
-
-    def take_off_function(self):
+    def disarm_function(self):
         try:
-            altitude = int(self.takeoff_value)
             for drone in [self.drone1, self.drone2, self.drone3]:
-            # TAKEOFF komutunu gönder
-                drone.mav.command_long_send(
-                    drone.target_system,  # Hedef sistem (drone)
-                    drone.target_component,  # Hedef bileşen
-                    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,  # TAKEOFF komutu
-                    0,  # Confirmation
-                    0, 0, 0, 0,  # Parametreler (ilk dört boş geçiliyor)
-                    0, 0, altitude  # Latitude, Longitude (boş geç), altitude (hedef irtifa)
-                )
-                print(f"Drone {altitude} metreye kalkıyor...")
+                self.pymavlink_helper.disarm(drone)
         except Exception as e:
             print(f"Komut çalıştırılırken bir hata oluştu: {e}")
 
-    def check_drone_state(self):
-        while True:
-            for i, drone in enumerate([self.drone1, self.drone2, self.drone3], 1):
-                print(f"{i}. Drone durumu kontrol ediliyor...")
-                # Her türlü mesajı bekle
-                msg = drone.recv_match(type='HEARTBEAT', blocking=True)
-                if msg:
-                    base_mode = msg.base_mode
-                    # MAV_MODE_FLAG_SAFETY_ARMED = 128 (0x80) -> Silahlanmış mı kontrol et
-                    if base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED:
-                        print("Drone şu an silahlanmış durumda.")
-                        # Havadaki durumu kontrol etmek için diğer modlara da bakabilirsiniz
-                        if base_mode & mavutil.mavlink.MAV_MODE_FLAG_GUIDED_ENABLED:
-                            print("Drone 'Guided' modunda ve muhtemelen havada.")
-                        else:
-                            print("Drone 'Guided' modunda değil.")
-                    else:
-                        print("Drone şu an yerde veya silahlanmamış.")
-                else:
-                    print(f"{i}. Drone'dan mesaj alınmadı.")
-            time.sleep(1)  # 1 saniye bekle
+    def take_off_function(self):
+        try:
+            altitude = int(self.main.takeoff_altitude_lineEdit.text())
+            for drone in [self.drone1, self.drone2, self.drone3]:
+                self.pymavlink_helper.takeoff(drone, altitude)
+        except Exception as e:
+            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
+
+    def land_function(self):
+        try:
+            for drone in [self.drone1, self.drone2, self.drone3]:
+                # LAND komutunu gönder
+                self.pymavlink_helper.land(drone)
+        except Exception as e:
+            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
+
+    def emergency_function(self):
+        for drone in [self.drone1, self.drone2, self.drone3]:
+            # BRAKE moduna geçiş yaparak drone'u acilen durdur
+            self.pymavlink_helper.brake(drone)
+        time.sleep(4)
+        for drone in [self.drone1, self.drone2, self.drone3]:
+            # LAND komutunu gönder
+            self.pymavlink_helper.land(drone)
 
     def swarm_move_function(self):
         try:
-            # Drone'ların mevcut pozisyonunu al ve 100 metre ileri hedefini ayarla
             self.move_position_x_value = int(self.main.move_position_x_lineEdit.text())
             self.move_position_y_value = int(self.main.move_position_y_lineEdit.text())
             self.move_position_z_value = int(self.main.move_position_z_lineEdit.text())
@@ -140,87 +116,30 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Drone'lar ileri hareket ettirilirken bir hata oluştu: {e}")
 
-    def land_function(self):
-        try:
-            for drone in [self.drone1, self.drone2, self.drone3]:
-                # LAND komutunu gönder
-                drone.mav.command_long_send(
-                    drone.target_system,  # Hedef sistem (drone)
-                    drone.target_component,  # Hedef bileşen
-                    mavutil.mavlink.MAV_CMD_NAV_LAND,  # LAND komutu
-                    0,  # Confirmation
-                    0, 0, 0, 0,  # Parametreler (ilk dört boş geçiliyor)
-                    0, 0, 0  # Latitude, Longitude, Altitude (boş geçiliyor)
-                )
-            print("Drone iniş moduna geçti...")
-        
-        except Exception as e:
-            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
-
-    def disarm_function(self):
-        try:
-            for drone in [self.drone1, self.drone2, self.drone3]:
-                # Disarm the vehicle
-                drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0,
-                    0, 0, 0, 0, 0, 0, 0)
-                # wait until disarming confirmed
-                drone.motors_disarmed_wait()
-                print('Drone disarmed!')
-        except Exception as e:
-            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
-    
-    def emergency_function(self):
-        for drone in [self.drone1, self.drone2, self.drone3]:
-            # BRAKE moduna geçiş yaparak drone'u acilen durdur
-            drone.mav.set_mode_send(
-                drone.target_system,
-                mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                drone.mode_mapping()['BRAKE']
-            )
-            print("Acil durdurma komutu gönderildi: BRAKE moduna geçiliyor.")
-
     def continually_update_position(self):
         # Drone pozisyonlarını güncellemek için iş parçacıkları oluştur
         thread1 = threading.Thread(target=self.update_position_drone1)
         thread2 = threading.Thread(target=self.update_position_drone2)
         thread3 = threading.Thread(target=self.update_position_drone3)
-        thread4 = threading.Thread(target=self.check_drone_state)
-        thread5 = threading.Thread(target=self.get_velocity_and_acceleration)
+        thread4 = threading.Thread(target=self.get_velocity_and_acceleration)
 
         # İş parçacıklarını başlat
         thread1.start()
         thread2.start()
         thread3.start()
         thread4.start()
-        thread5.start()
 
     def get_velocity_and_acceleration(self):
         while True:
             for drone in [self.drone1, self.drone2, self.drone3]:
                 # LOCAL_POSITION_NED mesajını al
-                msg = drone.recv_match(type='LOCAL_POSITION_NED', blocking=True)
-                if msg is not None:
-                    vx = msg.vx  # X eksenindeki hız (cm/s, metre/s'ye çevir)
-                    vy = msg.vy  # Y eksenindeki hız
-                    vz = msg.vz  # Z eksenindeki hız
-                    print(f"Velocity X: {vx} m/s, Y: {vy} m/s, Z: {vz} m/s")
+                self.pymavlink_helper.local_position_ned(drone)
             time.sleep(0.1)  # 0.1 saniye bekle
-
+    
+    #Drone pozisyonlarını güncelleyen fonksiyonlar drone'ları class olarak tanımlandıktan sonra pymavlink helper'a taşınacak
     def update_position_drone1(self):
         try:
             while True:
-                """1. Drone için attitude bilgisi al
-                msg=self.drone1.recv_match(type='ATTITUDE',blocking=True)
-                if msg:
-                    self.drone1_roll = msg.roll
-                    self.drone1_pitch = msg.pitch
-                    self.drone1_yaw = msg.yaw
-                    print(f"1. Drone Attitude: \nRoll={self.drone1_roll}, \nPitch={self.drone1_pitch}, \nYaw={self.drone1_yaw}")
-                """
                 # 1. Drone için pozisyon bilgisi al
                 msg = self.drone1.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
                 if msg:
