@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1035</width>
-    <height>698</height>
+    <width>900</width>
+    <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -159,27 +159,56 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="QLabel" name="drone1_position_label">
-           <property name="text">
-            <string> 1. Drone Pozisyonu: Bilinmiyor</string>
-           </property>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="drone1_position_label">
+             <property name="text">
+              <string> 1. Drone Pozisyonu: Bilinmiyor  </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="drone2_position_label">
+             <property name="text">
+              <string> 2. Drone Pozisyonu: Bilinmiyor  </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="drone3_position_label">
+             <property name="text">
+              <string> 3. Drone Pozisyonu: Bilinmiyor  </string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
-          <widget class="QLabel" name="drone2_position_label">
-           <property name="text">
-            <string> 2. Drone Pozisyonu: Bilinmiyor</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="drone3_position_label">
-           <property name="text">
-            <string> 3. Drone Pozisyonu: Bilinmiyor</string>
-           </property>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLabel" name="drone1_velocity_label">
+             <property name="text">
+              <string>  1.Drone Hızı  </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="drone2_velocity_label">
+             <property name="text">
+              <string>  2.Drone Hızı  </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="drone3_velocity_label">
+             <property name="text">
+              <string>  3.Drone Hızı  </string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -223,7 +252,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1035</width>
+     <width>900</width>
      <height>22</height>
     </rect>
    </property>

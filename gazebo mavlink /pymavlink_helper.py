@@ -53,14 +53,14 @@ class MavlinkHelper:
                 drone.mode_mapping()['BRAKE']
             )
 
-    def local_position_ned(self, drone):
+    def get_velocity_mavlink(self, drone):
         # Get local position ned
         msg = drone.recv_match(type='LOCAL_POSITION_NED', blocking=True)
         if msg is not None:
             vx = msg.vx  # X eksenindeki hız (cm/s, metre/s'ye çevir)
             vy = msg.vy  # Y eksenindeki hız
             vz = msg.vz  # Z eksenindeki hız
-            print(f"Velocity X: {vx} m/s, Y: {vy} m/s, Z: {vz} m/s")
+            return vx, vy, vz
 
     def position_target(self, drone, lat, lon, alt):
         # Send position target

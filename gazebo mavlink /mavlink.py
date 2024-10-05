@@ -116,12 +116,23 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Drone'lar ileri hareket ettirilirken bir hata oluştu: {e}")
 
-    def get_velocity_and_acceleration(self):
+    #class olarak tanımlanan drone'ların hızlarını alacak fonksiyon
+    def get_velocity(self):
         while True:
             for drone in [self.drone1, self.drone2, self.drone3]:
                 # LOCAL_POSITION_NED mesajını al
-                self.pymavlink_helper.local_position_ned(drone)
-            time.sleep(0.1)  # 0.1 saniye bekle
+                position = self.pymavlink_helper.get_velocity_mavlink(drone)
+                if position is not None:
+                    vx, vy, vz = position
+                    if drone == self.drone1:
+                        self.main.drone1_velocity_label.setText(f"  1. Drone Hızı:  \nX={vx:.3f} m/s  \nY={vy:.2f} m/s  \nZ={-vz:.2f} m/s  ")
+                    elif drone == self.drone2:
+                        self.main.drone2_velocity_label.setText(f"  2. Drone Hızı:  \nX={vx:.2f} m/s  \nY={vy:.2f} m/s  \nZ={-vz:.2f} m/s  ")
+                    elif drone == self.drone3:
+                        self.main.drone3_velocity_label.setText(f"  3. Drone Hızı:  \nX={vx:.2f} m/s  \nY={vy:.2f} m/s  \nZ={-vz:.2f} m/s  ")
+                    time.sleep(0.01)  # 0.1 saniye bekle
+                else:
+                    print(f"No data received from {drone}.")
     
     #Drone pozisyonlarını güncelleyen fonksiyonlar drone'ları class olarak tanımlandıktan sonra pymavlink helper'a taşınacak
     def update_position_drone1(self):
@@ -184,7 +195,7 @@ class LauncherAppFunctions(QMainWindow):
         thread1 = threading.Thread(target=self.update_position_drone1)
         thread2 = threading.Thread(target=self.update_position_drone2)
         thread3 = threading.Thread(target=self.update_position_drone3)
-        thread4 = threading.Thread(target=self.get_velocity_and_acceleration)
+        thread4 = threading.Thread(target=self.get_velocity)
 
         # İş parçacıklarını başlat
         thread1.start()
