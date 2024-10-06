@@ -59,9 +59,23 @@
            </widget>
           </item>
           <item alignment="Qt::AlignHCenter">
+           <widget class="QPushButton" name="force_arm_button">
+            <property name="text">
+             <string>Force Arm</string>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
            <widget class="QPushButton" name="disarm_button">
             <property name="text">
              <string>Disarm</string>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QPushButton" name="force_disarm_button">
+            <property name="text">
+             <string>Force Disarm</string>
             </property>
            </widget>
           </item>

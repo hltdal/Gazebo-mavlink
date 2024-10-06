@@ -24,9 +24,11 @@ class LauncherAppFunctions(QMainWindow):
         self.main.run_simulation_button.clicked.connect(self.launch_simulation)
         self.main.start_multisitl_button.clicked.connect(self.start_multisitl)
         self.main.arm_button.clicked.connect(self.arm_function)
+        self.main.force_arm_button.clicked.connect(self.force_arm_function)
+        self.main.disarm_button.clicked.connect(self.disarm_function)
+        self.main.force_disarm_button.clicked.connect(self.force_disarm_function)
         self.main.takeoff_button.clicked.connect(self.take_off_function)
         self.main.land_button.clicked.connect(self.land_function)
-        self.main.disarm_button.clicked.connect(self.disarm_function)
         self.main.swarm_move_button.clicked.connect(self.swarm_move_function)
         self.main.emergency_button.clicked.connect(self.emergency_function)
 
@@ -56,10 +58,24 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Komut çalıştırılırken bir hata oluştu: {e}")
     
+    def force_arm_function(self):
+        try:
+            for drone in [self.drone1, self.drone2, self.drone3]:
+                self.pymavlink_helper.force_arm(drone)
+        except Exception as e:
+            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
+                  
     def disarm_function(self):
         try:
             for drone in [self.drone1, self.drone2, self.drone3]:
                 self.pymavlink_helper.disarm(drone)
+        except Exception as e:
+            print(f"Komut çalıştırılırken bir hata oluştu: {e}")
+    
+    def force_disarm_function(self):
+        try:
+            for drone in [self.drone1, self.drone2, self.drone3]:
+                self.pymavlink_helper.force_disarm(drone)
         except Exception as e:
             print(f"Komut çalıştırılırken bir hata oluştu: {e}")
 
@@ -83,7 +99,7 @@ class LauncherAppFunctions(QMainWindow):
         for drone in [self.drone1, self.drone2, self.drone3]:
             # BRAKE moduna geçiş yaparak drone'u acilen durdur
             self.pymavlink_helper.brake(drone)
-        time.sleep(4)
+        time.sleep(4) #Tericih edilebilir yap
         for drone in [self.drone1, self.drone2, self.drone3]:
             # LAND komutunu gönder
             self.pymavlink_helper.land(drone)
@@ -182,7 +198,7 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Drone3 konumu alınırken hata oluştu: {e}")
 
-    def send_position_target(self, drone, lat, lon, alt,v):
+    def send_position_target(self, drone, lat, lon, alt, v):
         try:
             # Hedef pozisyon ve hız komutu gönderme
             self.pymavlink_helper.position_target(drone, lat, lon, alt)

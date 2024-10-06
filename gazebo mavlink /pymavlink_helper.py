@@ -19,15 +19,33 @@ class MavlinkHelper:
                     drone.target_system,
                     drone.target_component,
                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 1, 0, 0, 0, 0, 0, 0) 
+                    0, 1, 0, 0, 0, 0, 0, 0)
 
-    def disarm(self, drone):
+    def force_arm(self, drone):
+        # Set mode to guided
+        drone.set_mode("GUIDED")
+        # Arm command
+        drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, 1, 21196, 0, 0, 0, 0, 0)
+
+    def disarm(self, drone, is_force=False):
         # Disarm command
         drone.mav.command_long_send(
                     drone.target_system,
                     drone.target_component,
                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
                     0, 0, 0, 0, 0, 0, 0, 0)
+    
+    def force_disarm(self, drone):
+        # Disarm command
+        drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, 0, 21196, 0, 0, 0, 0, 0)
 
     def takeoff(self, drone, altitude):
         # Takeoff command
@@ -80,12 +98,12 @@ class MavlinkHelper:
 
     def set_velocity(self, drone, v):
         drone.mav.command_long_send(
-                drone.target_system,
-                drone.target_component,
-                mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
-                0,
-                0,  
-                v, 
-                0,  
-                0, 0, 0, 0 
-            )
+            drone.target_system,
+            drone.target_component,
+            mavutil.mavlink.PARAM_SET,
+            0,
+            0,  
+            v, 
+            0,  
+            0, 0, 0, 0 
+        )
