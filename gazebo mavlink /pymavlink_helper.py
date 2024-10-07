@@ -11,35 +11,34 @@ class MavlinkHelper:
         drone.wait_heartbeat()
         return drone
 
-    def arm(self, drone):
+    def arm(self, drone, is_force=False):
         drone.set_mode("GUIDED")
-        drone.mav.command_long_send(
+        if is_force:
+            drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, 1, 21196, 0, 0, 0, 0, 0)
+        else:
+            drone.mav.command_long_send(
                     drone.target_system,
                     drone.target_component,
                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
                     0, 1, 0, 0, 0, 0, 0, 0)
 
-    def force_arm(self, drone):
-        drone.set_mode("GUIDED")
-        drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 1, 21196, 0, 0, 0, 0, 0)
-
     def disarm(self, drone, is_force=False):
-        drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 0, 0, 0, 0, 0, 0, 0)
-    
-    def force_disarm(self, drone):
-        drone.mav.command_long_send(
+        if is_force:
+            drone.mav.command_long_send(
                     drone.target_system,
                     drone.target_component,
                     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
                     0, 0, 21196, 0, 0, 0, 0, 0)
+        else:
+            drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, 0, 0, 0, 0, 0, 0, 0)
 
     def takeoff(self, drone, altitude):
         drone.mav.command_long_send(
