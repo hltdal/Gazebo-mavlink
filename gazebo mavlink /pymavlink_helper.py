@@ -6,10 +6,11 @@ class MavlinkHelper:
     def __init__(self):
         pass
 
-    """def connection(self,drone,udpin):
+    def connection(self,drone,udpin):
         # Connect to the drone
         drone = mavutil.mavlink_connection(udpin)
-        drone.wait_heartbeat()"""
+        drone.wait_heartbeat()
+        return drone
 
     def arm(self, drone):
         # Set mode to guided
@@ -75,10 +76,19 @@ class MavlinkHelper:
         # Get local position ned
         msg = drone.recv_match(type='LOCAL_POSITION_NED', blocking=True)
         if msg is not None:
-            vx = msg.vx  # X eksenindeki hız (cm/s, metre/s'ye çevir)
+            vx = msg.vx  # X eksenindeki hız
             vy = msg.vy  # Y eksenindeki hız
             vz = msg.vz  # Z eksenindeki hız
-            return vx, vy, vz
+            return vx, vy, -vz
+        
+    def update_position_mavlink(self, drone):
+        # Get global position int
+        msg = drone.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
+        if msg:
+            lat = msg.lat / 1e7
+            lon = msg.lon / 1e7
+            alt = msg.relative_alt / 1000
+        return lat, lon, alt
 
     def position_target(self, drone, lat, lon, alt):
         # Send position target
@@ -100,7 +110,7 @@ class MavlinkHelper:
         drone.mav.command_long_send(
             drone.target_system,
             drone.target_component,
-            mavutil.mavlink.PARAM_SET,
+            mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
             0,
             0,  
             v, 

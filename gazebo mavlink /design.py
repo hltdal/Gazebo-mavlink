@@ -13,19 +13,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(900, 547)
+        MainWindow.resize(900, 522)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-        self.run_simulation_button = QtWidgets.QPushButton(self.centralwidget)
-        self.run_simulation_button.setObjectName("run_simulation_button")
-        self.verticalLayout.addWidget(self.run_simulation_button, 0, QtCore.Qt.AlignHCenter)
-        self.start_multisitl_button = QtWidgets.QPushButton(self.centralwidget)
-        self.start_multisitl_button.setObjectName("start_multisitl_button")
-        self.verticalLayout.addWidget(self.start_multisitl_button, 0, QtCore.Qt.AlignHCenter)
+        self.init_environment_button = QtWidgets.QPushButton(self.centralwidget)
+        self.init_environment_button.setObjectName("init_environment_button")
+        self.verticalLayout.addWidget(self.init_environment_button, 0, QtCore.Qt.AlignHCenter)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         self.verticalLayout.addItem(spacerItem)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -145,8 +142,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Drone Control Interface"))
-        self.run_simulation_button.setText(_translate("MainWindow", "Run Simulation"))
-        self.start_multisitl_button.setText(_translate("MainWindow", "Start Multisitl"))
+        self.init_environment_button.setText(_translate("MainWindow", "Init Environment"))
         self.arm_button.setText(_translate("MainWindow", "Arm"))
         self.force_arm_button.setText(_translate("MainWindow", "Force Arm"))
         self.disarm_button.setText(_translate("MainWindow", "Disarm"))
