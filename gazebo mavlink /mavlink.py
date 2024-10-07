@@ -1,4 +1,3 @@
-# launcher_functions.py
 import sys
 import subprocess
 import time
@@ -35,7 +34,6 @@ class LauncherAppFunctions(QMainWindow):
         self.drone3=Drone(udpin='127.0.0.1:14570')
         self.drones=[self.drone1,self.drone2,self.drone3]
 
-        # Butonlara tıklama olaylarını bağla
         self.main.init_environment_button.clicked.connect(self.init_environment)
         self.main.arm_button.clicked.connect(self.arm)
         self.main.force_arm_button.clicked.connect(self.force_arm)
@@ -59,7 +57,7 @@ class LauncherAppFunctions(QMainWindow):
     def arm(self):
         try:
             for drone in self.drones:
-                self.pymavlink_helper.arm(drone.mavlink_connection) #Drone is in GUİDED mode and armed
+                self.pymavlink_helper.arm(drone.mavlink_connection)
         except Exception as e:
             print(f"Arm komutu çalıştırılırken bir hata oluştu: {e}")
     
