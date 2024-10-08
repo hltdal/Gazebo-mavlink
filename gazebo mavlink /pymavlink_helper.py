@@ -15,35 +15,34 @@ class MavlinkHelper:
         return drone
 
     @abstractmethod
-    def arm(self, drone: pymavlink.mavutil.mavudp , is_force: bool) -> None:
+    def arm_disarm(self, drone: pymavlink.mavutil.mavudp ,is_arm: bool, is_force: bool) -> None:
         drone.set_mode("GUIDED")
-        if is_force:
-            drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 1, 21196, 0, 0, 0, 0, 0)
+        if is_arm:
+            if is_force:
+                drone.mav.command_long_send(
+                        drone.target_system,
+                        drone.target_component,
+                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                        0, 1, 21196, 0, 0, 0, 0, 0)
+            else:
+                drone.mav.command_long_send(
+                        drone.target_system,
+                        drone.target_component,
+                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                        0, 1, 0, 0, 0, 0, 0, 0)
         else:
-            drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 1, 0, 0, 0, 0, 0, 0)
-
-    @abstractmethod
-    def disarm(self, drone: pymavlink.mavutil.mavudp , is_force: bool) -> None:
-        if is_force:
-            drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 0, 21196, 0, 0, 0, 0, 0)
-        else:
-            drone.mav.command_long_send(
-                    drone.target_system,
-                    drone.target_component,
-                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                    0, 0, 0, 0, 0, 0, 0, 0)
+            if is_force:
+                drone.mav.command_long_send(
+                        drone.target_system,
+                        drone.target_component,
+                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                        0, 0, 21196, 0, 0, 0, 0, 0)
+            else:
+                drone.mav.command_long_send(
+                        drone.target_system,
+                        drone.target_component,
+                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                        0, 0, 0, 0, 0, 0, 0, 0)
 
     @abstractmethod
     def takeoff(self, drone: pymavlink.mavutil.mavudp , altitude: float) -> None:
@@ -60,7 +59,7 @@ class MavlinkHelper:
                     drone.target_component,
                     mavutil.mavlink.MAV_CMD_NAV_LAND,
                     0, 0, 0, 0, 0, 0, 0, 0)
-    
+
     @abstractmethod
     def brake(self, drone: pymavlink.mavutil.mavudp ) -> None:
         drone.mav.set_mode_send(
@@ -70,16 +69,16 @@ class MavlinkHelper:
             )
 
     @abstractmethod
-    def get_velocity_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple[float, float, float]:
+    def get_velocity_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple:
         msg = drone.recv_match(type='LOCAL_POSITION_NED', blocking=True)
         if msg is not None:
             vx = msg.vx
             vy = msg.vy
             vz = msg.vz
         return vx, vy, -vz
-        
+
     @abstractmethod
-    def update_position_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple[float, float, float]:
+    def update_position_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple:
         msg = drone.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
         if msg is not None:
             lat = msg.lat / 1e7

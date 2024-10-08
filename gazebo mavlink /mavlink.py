@@ -48,28 +48,28 @@ class LauncherAppFunctions(QMainWindow):
     def arm(self):
         try:
             for drone in self.drones:
-                self.pymavlink_helper.arm(drone.mavlink_connection, is_force=False)
+                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=True, is_force=False)
         except Exception as e:
             print(f"Arm komutu çalıştırılırken bir hata oluştu: {e}")
     
     def force_arm(self):
         try:
             for drone in self.drones:
-                self.pymavlink_helper.arm(drone.mavlink_connection, is_force=True)
+                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=True, is_force=True)
         except Exception as e:
             print(f"Force arm komutu çalıştırılırken bir hata oluştu: {e}")
                   
     def disarm(self):
         try:
             for drone in self.drones:
-                self.pymavlink_helper.disarm(drone.mavlink_connection, is_force=False)
+                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=False, is_force=False)
         except Exception as e:
             print(f"Disarm komutu çalıştırılırken bir hata oluştu: {e}")
     
     def force_disarm(self):
         try:
             for drone in self.drones:
-                self.pymavlink_helper.disarm(drone.mavlink_connection, is_force=True)
+                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=False, is_force=True)
         except Exception as e:
             print(f"Force disarm komutu çalıştırılırken bir hata oluştu: {e}")
 
