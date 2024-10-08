@@ -17,32 +17,18 @@ class MavlinkHelper:
     @abstractmethod
     def arm_disarm(self, drone: pymavlink.mavutil.mavudp ,is_arm: bool, is_force: bool) -> None:
         drone.set_mode("GUIDED")
-        if is_arm:
-            if is_force:
-                drone.mav.command_long_send(
-                        drone.target_system,
-                        drone.target_component,
-                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                        0, 1, 21196, 0, 0, 0, 0, 0)
-            else:
-                drone.mav.command_long_send(
-                        drone.target_system,
-                        drone.target_component,
-                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                        0, 1, 0, 0, 0, 0, 0, 0)
+        if is_force:
+            drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, is_arm, 21196, 0, 0, 0, 0, 0)
         else:
-            if is_force:
-                drone.mav.command_long_send(
-                        drone.target_system,
-                        drone.target_component,
-                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                        0, 0, 21196, 0, 0, 0, 0, 0)
-            else:
-                drone.mav.command_long_send(
-                        drone.target_system,
-                        drone.target_component,
-                        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-                        0, 0, 0, 0, 0, 0, 0, 0)
+            drone.mav.command_long_send(
+                    drone.target_system,
+                    drone.target_component,
+                    mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+                    0, is_arm, 0, 0, 0, 0, 0, 0)
 
     @abstractmethod
     def takeoff(self, drone: pymavlink.mavutil.mavudp , altitude: float) -> None:
