@@ -9,23 +9,14 @@ from geometry_msgs.msg import PoseStamped
 from pymavlink import mavutil
 import math
 from pymavlink_helper import MavlinkHelper
-
-class Drone:
-    def __init__(self, udpin):
-        self.mavlink_connection = None
-        self.udpin = udpin
-        self.lat = None
-        self.lon = None
-        self.alt = None
-        self.vx = None
-        self.vy = None
-        self.vz = None
+from drone_class import Drone
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
         super().__init__()
         self.main = Ui_MainWindow()
         self.pymavlink_helper = MavlinkHelper()
+        
         self.main.setupUi(self)
         self.working_directory = "~"
 
@@ -84,7 +75,7 @@ class LauncherAppFunctions(QMainWindow):
 
     def take_off(self):
         try:
-            altitude = int(self.main.takeoff_altitude_lineEdit.text())
+            altitude = float(self.main.takeoff_altitude_lineEdit.text())
             for drone in self.drones:
                 self.pymavlink_helper.takeoff(drone.mavlink_connection, altitude)
         except Exception as e:
@@ -99,11 +90,11 @@ class LauncherAppFunctions(QMainWindow):
 
     def emergency(self):
         try:
-            for drone in [self.drone1, self.drone2, self.drone3]:
-                self.pymavlink_helper.brake(drone)
+            for drone in self.drones:
+                self.pymavlink_helper.brake(drone.mavlink_connection)
             time.sleep(4) #Tercih edilebilir
-            for drone in [self.drone1, self.drone2, self.drone3]:
-                self.pymavlink_helper.land(drone)
+            for drone in self.drones:
+                self.pymavlink_helper.land(drone.mavlink_connection)
         except Exception as e:
             print(f"Emergency komutu çalıştırılırken bir hata oluştu: {e}")
 
