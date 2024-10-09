@@ -10,6 +10,13 @@ from pymavlink import mavutil
 import math
 from pymavlink_helper import MavlinkHelper
 from drone_class import Drone
+from individual_design import Ui_Dialog as Ui_Secondwindow
+
+
+class SecondWindow(QDialog, Ui_Secondwindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
@@ -34,6 +41,7 @@ class LauncherAppFunctions(QMainWindow):
         self.main.land_button.clicked.connect(self.land)
         self.main.swarm_move_button.clicked.connect(self.swarm_move)
         self.main.emergency_button.clicked.connect(self.emergency)
+        self.main.command_window_button.clicked.connect(self.open_second_window)
 
     def init_environment(self):
         command = "roslaunch iq_sim multi_drone.launch"
@@ -161,6 +169,10 @@ class LauncherAppFunctions(QMainWindow):
             subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {self.working_directory} && {command}; exec bash'])
         except Exception as e:
             print(f"Terminal komutu çalıştırılırken bir hata oluştu: {e}")
+
+    def open_second_window(self):
+        self.second_window = SecondWindow()
+        self.second_window.exec_()
 
 def main():
     app = QApplication(sys.argv)
