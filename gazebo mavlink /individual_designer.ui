@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Individual Drone Control Interface</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -21,14 +21,14 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item alignment="Qt::AlignHCenter">
-          <widget class="QPushButton" name="individual_arm_button_2">
+          <widget class="QPushButton" name="individual_arm_button">
            <property name="text">
             <string>Arm</string>
            </property>
           </widget>
          </item>
          <item alignment="Qt::AlignHCenter">
-          <widget class="QPushButton" name="individual_force_arm_button_2">
+          <widget class="QPushButton" name="individual_force_arm_button">
            <property name="text">
             <string>Force Arm</string>
            </property>

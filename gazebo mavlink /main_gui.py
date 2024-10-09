@@ -11,19 +11,15 @@ import math
 from pymavlink_helper import MavlinkHelper
 from drone_class import Drone
 from individual_design import Ui_Dialog as Ui_Secondwindow
-
-
-class SecondWindow(QDialog, Ui_Secondwindow):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
+from functions import drone_functions
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
         super().__init__()
         self.main = Ui_MainWindow()
         self.pymavlink_helper = MavlinkHelper()
-        
+        self.appointments = drone_functions()
+
         self.main.setupUi(self)
         self.working_directory = "~"
 
@@ -33,7 +29,7 @@ class LauncherAppFunctions(QMainWindow):
         self.drones=[self.drone1,self.drone2,self.drone3]
 
         self.main.init_environment_button.clicked.connect(self.init_environment)
-        self.main.arm_button.clicked.connect(self.arm)
+        self.main.arm_button.clicked.connect(self.arm_all)
         self.main.force_arm_button.clicked.connect(self.force_arm)
         self.main.disarm_button.clicked.connect(self.disarm)
         self.main.force_disarm_button.clicked.connect(self.force_disarm)
@@ -53,58 +49,27 @@ class LauncherAppFunctions(QMainWindow):
         print("Drone'lar bağlandı")
         self.continually_update_position()
 
-    def arm(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=True, is_force=False)
-        except Exception as e:
-            print(f"Arm komutu çalıştırılırken bir hata oluştu: {e}")
+    def arm_all(self):
+        self.appointments.arm(self.drones)
     
     def force_arm(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=True, is_force=True)
-        except Exception as e:
-            print(f"Force arm komutu çalıştırılırken bir hata oluştu: {e}")
+        self.appointments.force_arm(self.drones)
                   
     def disarm(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=False, is_force=False)
-        except Exception as e:
-            print(f"Disarm komutu çalıştırılırken bir hata oluştu: {e}")
+        self.appointments.disarm(self.drones)
     
     def force_disarm(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.arm_disarm(drone.mavlink_connection,is_arm=False, is_force=True)
-        except Exception as e:
-            print(f"Force disarm komutu çalıştırılırken bir hata oluştu: {e}")
+        self.appointments.force_disarm(self.drones)
 
     def take_off(self):
-        try:
-            altitude = float(self.main.takeoff_altitude_lineEdit.text())
-            for drone in self.drones:
-                self.pymavlink_helper.takeoff(drone.mavlink_connection, altitude)
-        except Exception as e:
-            print(f"Takeoff komutu çalıştırılırken bir hata oluştu: {e}")
+        altitude = float(self.main.takeoff_altitude_lineEdit.text())
+        self.appointments.takeoff(self.drones, altitude)
 
     def land(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.land(drone.mavlink_connection)
-        except Exception as e:
-            print(f"Land komutu çalıştırılırken bir hata oluştu: {e}")
+        self.appointments.land(self.drones)
 
     def emergency(self):
-        try:
-            for drone in self.drones:
-                self.pymavlink_helper.brake(drone.mavlink_connection)
-            time.sleep(4) #Tercih edilebilir
-            for drone in self.drones:
-                self.pymavlink_helper.land(drone.mavlink_connection)
-        except Exception as e:
-            print(f"Emergency komutu çalıştırılırken bir hata oluştu: {e}")
+        self.appointments.emergency(self.drones)
 
     def swarm_move(self):
         try:
@@ -135,7 +100,7 @@ class LauncherAppFunctions(QMainWindow):
                             self.main.drone3_velocity_label.setText(f"  3. Drone Hızı:  \nX={drone.vx:.2f} m/s  \nY={drone.vy:.2f} m/s  \nZ={drone.vz:.2f} m/s  ")
         except Exception as e:
             print(f"Drone hızı alınırken hata oluştu: {e}")
-    
+
     def update_position(self):
         try:
             while True:
@@ -171,8 +136,53 @@ class LauncherAppFunctions(QMainWindow):
             print(f"Terminal komutu çalıştırılırken bir hata oluştu: {e}")
 
     def open_second_window(self):
-        self.second_window = SecondWindow()
-        self.second_window.exec_()
+        try:
+            selected_index = self.main.comboBox.currentIndex()
+            selected_drone = self.drones[selected_index]
+            self.second_window=SecondWindow(selected_drone, self.pymavlink_helper)
+            self.second_window.exec_()
+        except Exception as e:
+            print(f"İkinci pencere açılırken bir hata oluştu: {e}")
+
+class SecondWindow(QDialog):
+    def __init__(self, selected_drone, pymavlink_helper):
+        super().__init__()
+        self.main=Ui_Secondwindow()
+        self.appointments=drone_functions()
+        self.main.setupUi(self)
+
+        self.selected_drone=[]
+        self.selected_drone.append(selected_drone)
+        self.pymavlink_helper=pymavlink_helper
+        self.main.individual_arm_button.clicked.connect(self.arm_individual)
+        self.main.individual_force_arm_button.clicked.connect(self.force_arm_individual)
+        self.main.individual_disarm_button.clicked.connect(self.disarm_individual)
+        self.main.individual_force_disarm_button.clicked.connect(self.force_disarm_individual)
+        self.main.individual_takeoff_button.clicked.connect(self.takeoff_individual)
+        self.main.individual_land_button.clicked.connect(self.land_individual)
+        self.main.individual_emergency_button.clicked.connect(self.emergency_individual)
+
+    def arm_individual(self):
+        self.appointments.arm(self.selected_drone)
+    
+    def force_arm_individual(self):
+        self.appointments.force_arm(self.selected_drone)
+
+    def disarm_individual(self):
+        self.appointments.disarm(self.selected_drone)
+
+    def force_disarm_individual(self):
+        self.appointments.force_disarm(self.selected_drone)
+
+    def takeoff_individual(self):
+        altitude = float(self.main.individual_takeoff_altitude_lineEdit.text())
+        self.appointments.takeoff(self.selected_drone, altitude)
+
+    def land_individual(self):
+        self.appointments.land(self.selected_drone)
+
+    def emergency_individual(self):
+        self.appointments.emergency(self.selected_drone)
 
 def main():
     app = QApplication(sys.argv)
