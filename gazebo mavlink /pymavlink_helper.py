@@ -55,7 +55,7 @@ class MavlinkHelper:
             )
 
     @abstractmethod
-    def get_velocity_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple:
+    def get_velocity(self, drone: pymavlink.mavutil.mavudp) -> tuple:
         msg = drone.recv_match(type='LOCAL_POSITION_NED', blocking=True)
         if msg is not None:
             vx = msg.vx
@@ -64,7 +64,7 @@ class MavlinkHelper:
         return vx, vy, -vz
 
     @abstractmethod
-    def update_position_mavlink(self, drone: pymavlink.mavutil.mavudp) -> tuple:
+    def get_position(self, drone: pymavlink.mavutil.mavudp) -> tuple:
         msg = drone.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
         if msg is not None:
             lat = msg.lat / 1e7
@@ -73,7 +73,7 @@ class MavlinkHelper:
         return lat, lon, alt
 
     @abstractmethod
-    def position_target(self, drone: pymavlink.mavutil.mavudp, lat: float, lon: float, alt: float) -> None:
+    def send_position(self, drone: pymavlink.mavutil.mavudp, lat: float, lon: float, alt: float) -> None:
         drone.mav.send(
                 drone.mav.set_position_target_global_int_encode(
                     0,
@@ -89,7 +89,7 @@ class MavlinkHelper:
             )
 
     @abstractmethod
-    def set_velocity(self, drone: pymavlink.mavutil.mavudp, v: float) -> None:
+    def send_velocity(self, drone: pymavlink.mavutil.mavudp, v: float) -> None:
         drone.mav.command_long_send(
             drone.target_system,
             drone.target_component,

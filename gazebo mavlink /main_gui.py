@@ -90,7 +90,7 @@ class LauncherAppFunctions(QMainWindow):
         try:
             while True:
                 for drone in self.drones:
-                    drone.vx, drone.vy, drone.vz=self.pymavlink_helper.get_velocity_mavlink(drone.mavlink_connection)
+                    drone.vx, drone.vy, drone.vz=self.pymavlink_helper.send_velocity(drone.mavlink_connection)
                     if (drone.vx, drone.vy, drone.vz) is not None:
                         if drone == self.drone1:
                             self.main.drone1_velocity_label.setText(f"  1. Drone Hızı:  \nX={drone.vx:.3f} m/s  \nY={drone.vy:.2f} m/s  \nZ={drone.vz:.2f} m/s  ")
@@ -105,7 +105,7 @@ class LauncherAppFunctions(QMainWindow):
         try:
             while True:
                 for drone in self.drones:
-                    drone.lat, drone.lon, drone.alt = self.pymavlink_helper.update_position_mavlink(drone.mavlink_connection)
+                    drone.lat, drone.lon, drone.alt = self.pymavlink_helper.get_position(drone.mavlink_connection)
                     if drone == self.drone1:
                         self.main.drone1_position_label.setText(f"1. Drone Pozisyonu: \nLatitude={drone.lat}, \nLongitude={drone.lon}, \nAltitude={drone.alt} m")
                     elif drone == self.drone2:
@@ -117,8 +117,8 @@ class LauncherAppFunctions(QMainWindow):
 
     def send_position_target(self, drone, lat, lon, alt, v):
         try:
-            self.pymavlink_helper.position_target(drone, lat, lon, alt)
-            self.pymavlink_helper.set_velocity(drone, v)
+            self.pymavlink_helper.send_position(drone, lat, lon, alt)
+            self.pymavlink_helper.send_velocity(drone, v)
         except Exception as e:
             print(f"Pozisyon gönderilirken bir hata oluştu: {e}")
     
