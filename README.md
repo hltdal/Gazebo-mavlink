@@ -14,6 +14,8 @@ cd ~
 
 sudo apt install git
 
+#If you are installing for the first time, go to config: (git config --global user.name "GitHubKullaniciAdi") , (git config --global user.email "email@example.com")
+
 git clone https://github.com/ArduPilot/ardupilot.git
 
 cd ardupilot
@@ -23,6 +25,8 @@ cd ardupilot
 cd ardupilot
 
 Tools/environment_install/install-prereqs-ubuntu.sh -y
+
+#If the above code fails, run it again
 
 **Use pip (Python package installer) to install mavproxy:**
 
@@ -177,11 +181,7 @@ source ~/.bashrc
 
 **Video Tutorial at https://youtu.be/N4XvVldWlXk**
 
-**Make sure Install ROS plugins for Gazebo:**
-
-sudo apt install ros-melodic-gazebo-ros ros-melodic-gazebo-plugins
-
-# 
+**Make sure Install ROS plugins for Gazebo:** 
 
 ### Launch Gazebo World
 
@@ -212,7 +212,7 @@ roslaunch iq_sim apm.launch
 
 # All sources are given below
 
-**https://www.youtube.com/watch?v=EmIjedzHwzI&list=PLy9nLDKxDN683GqAiJ4IVLquYBod_2oA6&index=5&ab_channel=IntelligentQuads**
+**https://www.youtube.com/playlist?list=PLy9nLDKxDN683GqAiJ4IVLquYBod_2oA6**
 
 https://www.youtube.com/watch?v=1FpJvUVPxL0&ab_channel=IntelligentQuads
 
