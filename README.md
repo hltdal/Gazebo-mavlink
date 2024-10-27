@@ -177,11 +177,7 @@ source ~/.bashrc
 
 **Video Tutorial at https://youtu.be/N4XvVldWlXk**
 
-**Make sure Install ROS plugins for Gazebo:**
-
-sudo apt install ros-melodic-gazebo-ros ros-melodic-gazebo-plugins
-
-# 
+**Make sure Install ROS plugins for Gazebo:** 
 
 ### Launch Gazebo World
 
