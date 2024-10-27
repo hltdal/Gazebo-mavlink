@@ -51,13 +51,13 @@ class LauncherAppFunctions(QMainWindow):
 
     def arm_all(self):
         self.appointments.arm(self.drones)
-    
+
     def force_arm(self):
         self.appointments.force_arm(self.drones)
-                  
+
     def disarm(self):
         self.appointments.disarm(self.drones)
-    
+
     def force_disarm(self):
         self.appointments.force_disarm(self.drones)
 
@@ -73,12 +73,12 @@ class LauncherAppFunctions(QMainWindow):
 
     def swarm_move(self):
         try:
-            self.move_position_x_value = float(self.main.move_position_x_lineEdit.text())
-            self.move_position_y_value = float(self.main.move_position_y_lineEdit.text())
-            self.move_position_z_value = float(self.main.move_position_z_lineEdit.text())
-            self.move_velocity_value = float(self.main.move_velocity_lineEdit.text())
+            move_position_x_value = float(self.main.move_position_x_lineEdit.text())
+            move_position_y_value = float(self.main.move_position_y_lineEdit.text())
+            move_position_z_value = float(self.main.move_position_z_lineEdit.text())
+            move_velocity_value = float(self.main.move_velocity_lineEdit.text())
 
-            self.appointments.move(self.drones, self.move_position_x_value, self.move_position_y_value, self.move_position_z_value, self.move_velocity_value)
+            self.appointments.move(self.drones, move_position_x_value, move_position_y_value, move_position_z_value, move_velocity_value)
 
         except Exception as e:
             print(f"Swarm move çalıştırılırken bir hata oluştu: {e}")
@@ -113,7 +113,7 @@ class LauncherAppFunctions(QMainWindow):
                 time.sleep(0.01)
         except Exception as e:
             print(f"Drone konumu alınırken hata oluştu: {e}")
-    
+
     def continually_update_position(self):
         thread1 = threading.Thread(target=self.update_position)
         thread2 = threading.Thread(target=self.update_velocity)
@@ -157,7 +157,7 @@ class SecondWindow(QDialog):
 
     def arm_individual(self):
         self.appointments.arm(self.selected_drone)
-    
+
     def force_arm_individual(self):
         self.appointments.force_arm(self.selected_drone)
 
