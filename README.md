@@ -14,6 +14,8 @@ cd ~
 
 sudo apt install git
 
+#If you are installing for the first time, go to config: (git config --global user.name "GitHubKullaniciAdi") , (git config --global user.email "email@example.com")
+
 git clone https://github.com/ArduPilot/ardupilot.git
 
 cd ardupilot
@@ -23,6 +25,8 @@ cd ardupilot
 cd ardupilot
 
 Tools/environment_install/install-prereqs-ubuntu.sh -y
+
+#If the above code fails, run it again
 
 **Use pip (Python package installer) to install mavproxy:**
 
