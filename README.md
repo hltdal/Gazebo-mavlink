@@ -212,7 +212,7 @@ roslaunch iq_sim apm.launch
 
 # All sources are given below
 
-**https://www.youtube.com/watch?v=EmIjedzHwzI&list=PLy9nLDKxDN683GqAiJ4IVLquYBod_2oA6&index=5&ab_channel=IntelligentQuads**
+**https://www.youtube.com/playlist?list=PLy9nLDKxDN683GqAiJ4IVLquYBod_2oA6**
 
 https://www.youtube.com/watch?v=1FpJvUVPxL0&ab_channel=IntelligentQuads
 
