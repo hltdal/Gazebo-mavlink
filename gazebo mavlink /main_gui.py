@@ -73,24 +73,21 @@ class LauncherAppFunctions(QMainWindow):
 
     def swarm_move(self):
         try:
-            self.move_position_x_value = int(self.main.move_position_x_lineEdit.text())
-            self.move_position_y_value = int(self.main.move_position_y_lineEdit.text())
-            self.move_position_z_value = int(self.main.move_position_z_lineEdit.text())
-            self.move_velocity_value = int(self.main.move_velocity_lineEdit.text())
+            self.move_position_x_value = float(self.main.move_position_x_lineEdit.text())
+            self.move_position_y_value = float(self.main.move_position_y_lineEdit.text())
+            self.move_position_z_value = float(self.main.move_position_z_lineEdit.text())
+            self.move_velocity_value = float(self.main.move_velocity_lineEdit.text())
 
-            for drone in self.drones:
-                target_x1=drone.lat + (self.move_position_x_value / 6378137.0) * (180 / math.pi)
-                target_y1=drone.lon + (self.move_position_y_value / 6378137.0) * (180 / math.pi)
-                target_z1=drone.alt + self.move_position_z_value
-                self.send_position_target(drone.mavlink_connection, target_x1, target_y1, target_z1, self.move_velocity_value)
+            self.appointments.move(self.drones, self.move_position_x_value, self.move_position_y_value, self.move_position_z_value, self.move_velocity_value)
+
         except Exception as e:
             print(f"Swarm move çalıştırılırken bir hata oluştu: {e}")
 
-    def get_velocity(self):
+    def update_velocity(self):
         try:
             while True:
                 for drone in self.drones:
-                    drone.vx, drone.vy, drone.vz=self.pymavlink_helper.send_velocity(drone.mavlink_connection)
+                    drone.vx, drone.vy, drone.vz=self.pymavlink_helper.get_velocity(drone.mavlink_connection)
                     if (drone.vx, drone.vy, drone.vz) is not None:
                         if drone == self.drone1:
                             self.main.drone1_velocity_label.setText(f"  1. Drone Hızı:  \nX={drone.vx:.3f} m/s  \nY={drone.vy:.2f} m/s  \nZ={drone.vz:.2f} m/s  ")
@@ -98,6 +95,7 @@ class LauncherAppFunctions(QMainWindow):
                             self.main.drone2_velocity_label.setText(f"  2. Drone Hızı:  \nX={drone.vx:.2f} m/s  \nY={drone.vy:.2f} m/s  \nZ={drone.vz:.2f} m/s  ")
                         elif drone == self.drone3:
                             self.main.drone3_velocity_label.setText(f"  3. Drone Hızı:  \nX={drone.vx:.2f} m/s  \nY={drone.vy:.2f} m/s  \nZ={drone.vz:.2f} m/s  ")
+                time.sleep(0.01)
         except Exception as e:
             print(f"Drone hızı alınırken hata oluştu: {e}")
 
@@ -112,19 +110,13 @@ class LauncherAppFunctions(QMainWindow):
                         self.main.drone2_position_label.setText(f"2. Drone Pozisyonu: \nLatitude={drone.lat}, \nLongitude={drone.lon}, \nAltitude={drone.alt} m")
                     elif drone == self.drone3:
                         self.main.drone3_position_label.setText(f"3. Drone Pozisyonu: \nLatitude={drone.lat}, \nLongitude={drone.lon}, \nAltitude={drone.alt} m")
+                time.sleep(0.01)
         except Exception as e:
             print(f"Drone konumu alınırken hata oluştu: {e}")
-
-    def send_position_target(self, drone, lat, lon, alt, v):
-        try:
-            self.pymavlink_helper.send_position(drone, lat, lon, alt)
-            self.pymavlink_helper.send_velocity(drone, v)
-        except Exception as e:
-            print(f"Pozisyon gönderilirken bir hata oluştu: {e}")
     
     def continually_update_position(self):
         thread1 = threading.Thread(target=self.update_position)
-        thread2 = threading.Thread(target=self.get_velocity)
+        thread2 = threading.Thread(target=self.update_velocity)
 
         thread1.start()
         thread2.start()
@@ -161,6 +153,7 @@ class SecondWindow(QDialog):
         self.main.individual_takeoff_button.clicked.connect(self.takeoff_individual)
         self.main.individual_land_button.clicked.connect(self.land_individual)
         self.main.individual_emergency_button.clicked.connect(self.emergency_individual)
+        self.main.individual_move_button.clicked.connect(self.move)
 
     def arm_individual(self):
         self.appointments.arm(self.selected_drone)
@@ -183,6 +176,18 @@ class SecondWindow(QDialog):
 
     def emergency_individual(self):
         self.appointments.emergency(self.selected_drone)
+
+    def move(self):
+        try:
+            move_position_x_value=float(self.main.individual_move_position_x_lineEdit.text())
+            move_position_y_value=float(self.main.individual_move_position_y_lineEdit.text())
+            move_position_z_value=float(self.main.individual_move_position_z_lineEdit.text())
+            move_velocity_value = float(self.main.individual_move_velocity_lineEdit.text())
+
+            self.appointments.move(self.selected_drone, move_position_x_value, move_position_y_value, move_position_z_value, move_velocity_value)
+
+        except Exception as e:
+            print(f"Individual move emri verilirken hata oluştu{e}")
 
 def main():
     app = QApplication(sys.argv)

@@ -1,4 +1,5 @@
 import time
+import math
 from pymavlink_helper import MavlinkHelper
 
 class drone_functions:
@@ -57,3 +58,21 @@ class drone_functions:
                 self.pymavlink_helper.land(drone.mavlink_connection)
         except Exception as e:
             print(f"Emergency komutu çalıştırılırken bir hata oluştu: {e}")
+
+    def move(self, drones, move_position_x_value, move_position_y_value, move_position_z_value, move_velocity_value):
+        try:
+            for drone in drones:
+                target_x=drone.lat + (move_position_x_value / 6378137.0) * (180 / math.pi)
+                target_y=drone.lon + (move_position_y_value / 6378137.0) * (180 / math.pi)
+                target_z=drone.alt + move_position_z_value
+
+                self.send_position_target(drone, target_x, target_y, target_z, move_velocity_value)
+        except Exception as e:
+            print(f"Pozisyon hedefi tanımlanırken bir hata oluştu: {e}")
+
+    def send_position_target(self, drone, lat, lon, alt, v):
+        try:
+            self.pymavlink_helper.send_position(drone.mavlink_connection, lat, lon, alt)
+            self.pymavlink_helper.send_velocity(drone.mavlink_connection, v)
+        except Exception as e:
+            print(f"Pozisyon gönderilirken bir hata oluştu: {e}")

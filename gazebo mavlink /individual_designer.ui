@@ -97,32 +97,43 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_7">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QLineEdit" name="individual_move_position_x_lineEdit">
-         <property name="placeholderText">
-          <string>X</string>
-         </property>
-        </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLineEdit" name="individual_move_position_x_lineEdit">
+           <property name="placeholderText">
+            <string>X</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLineEdit" name="individual_move_position_y_lineEdit">
+           <property name="placeholderText">
+            <string>Y</string>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLineEdit" name="individual_move_position_z_lineEdit">
+           <property name="placeholderText">
+            <string>Z</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item alignment="Qt::AlignHCenter">
-        <widget class="QLineEdit" name="individual_move_position_y_lineEdit">
+        <widget class="QLineEdit" name="individual_move_velocity_lineEdit">
          <property name="placeholderText">
-          <string>Y</string>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignRight">
-        <widget class="QLineEdit" name="individual_move_position_z_lineEdit">
-         <property name="placeholderText">
-          <string>Z</string>
+          <string>Velocity</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item alignment="Qt::AlignHCenter">
-      <widget class="QPushButton" name="individual_move_button_x">
+      <widget class="QPushButton" name="individual_move_button">
        <property name="text">
         <string>Move</string>
        </property>
