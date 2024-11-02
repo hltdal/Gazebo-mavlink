@@ -16,240 +16,260 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item alignment="Qt::AlignHCenter">
-       <widget class="QPushButton" name="init_environment_button">
-        <property name="text">
-         <string>Init Environment</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Elementary drone movement</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QVBoxLayout" name="verticalLayout">
           <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="arm_button">
+           <widget class="QPushButton" name="init_environment_button">
             <property name="text">
-             <string>Arm</string>
+             <string>Init Environment</string>
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="force_arm_button">
-            <property name="text">
-             <string>Force Arm</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="disarm_button">
-            <property name="text">
-             <string>Disarm</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="force_disarm_button">
-            <property name="text">
-             <string>Force Disarm</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="emergency_button">
-            <property name="text">
-             <string>Emergency</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLineEdit" name="takeoff_altitude_lineEdit">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="placeholderText">
-             <string>Altitude</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="takeoff_button">
-            <property name="text">
-             <string>Takeoff</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="land_button">
-            <property name="text">
-             <string>Land</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item alignment="Qt::AlignHCenter">
-             <widget class="QLineEdit" name="move_position_x_lineEdit">
-              <property name="placeholderText">
-               <string>X</string>
-              </property>
-             </widget>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Preferred</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="arm_button">
+                <property name="text">
+                 <string>Arm</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="force_arm_button">
+                <property name="text">
+                 <string>Force Arm</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="disarm_button">
+                <property name="text">
+                 <string>Disarm</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="force_disarm_button">
+                <property name="text">
+                 <string>Force Disarm</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="emergency_button">
+                <property name="text">
+                 <string>Emergency</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item alignment="Qt::AlignHCenter">
-             <widget class="QLineEdit" name="move_position_y_lineEdit">
-              <property name="placeholderText">
-               <string>Y</string>
-              </property>
-             </widget>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLineEdit" name="takeoff_altitude_lineEdit">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="placeholderText">
+                 <string>Altitude</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="takeoff_button">
+                <property name="text">
+                 <string>Takeoff</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="land_button">
+                <property name="text">
+                 <string>Land</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item alignment="Qt::AlignHCenter">
-             <widget class="QLineEdit" name="move_position_z_lineEdit">
-              <property name="placeholderText">
-               <string>Z</string>
-              </property>
-             </widget>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLineEdit" name="move_position_x_lineEdit">
+                  <property name="placeholderText">
+                   <string>X</string>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLineEdit" name="move_position_y_lineEdit">
+                  <property name="placeholderText">
+                   <string>Y</string>
+                  </property>
+                 </widget>
+                </item>
+                <item alignment="Qt::AlignHCenter">
+                 <widget class="QLineEdit" name="move_position_z_lineEdit">
+                  <property name="placeholderText">
+                   <string>Z</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QLineEdit" name="move_velocity_lineEdit">
+                <property name="placeholderText">
+                 <string>Velocity</string>
+                </property>
+               </widget>
+              </item>
+              <item alignment="Qt::AlignHCenter">
+               <widget class="QPushButton" name="swarm_move_button">
+                <property name="text">
+                 <string>Swarm Move</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLineEdit" name="move_velocity_lineEdit">
-            <property name="placeholderText">
-             <string>Velocity</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QPushButton" name="swarm_move_button">
-            <property name="text">
-             <string>Swarm Move</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
+        <item>
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QLabel" name="drone1_position_label">
+                 <property name="text">
+                  <string> 1. Drone Pozisyonu: Bilinmiyor  </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="drone2_position_label">
+                 <property name="text">
+                  <string> 2. Drone Pozisyonu: Bilinmiyor  </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="drone3_position_label">
+                 <property name="text">
+                  <string> 3. Drone Pozisyonu: Bilinmiyor  </string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="QLabel" name="drone1_velocity_label">
+                 <property name="text">
+                  <string>  1.Drone Hızı  </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="drone2_velocity_label">
+                 <property name="text">
+                  <string>  2.Drone Hızı  </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="drone3_velocity_label">
+                 <property name="text">
+                  <string>  3.Drone Hızı  </string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item alignment="Qt::AlignHCenter">
+              <widget class="QComboBox" name="comboBox">
+               <item>
+                <property name="text">
+                 <string>Drone1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Drone2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Drone3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item alignment="Qt::AlignHCenter">
+              <widget class="QPushButton" name="command_window_button">
+               <property name="text">
+                <string>Open Command Window</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="drone1_position_label">
-             <property name="text">
-              <string> 1. Drone Pozisyonu: Bilinmiyor  </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="drone2_position_label">
-             <property name="text">
-              <string> 2. Drone Pozisyonu: Bilinmiyor  </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="drone3_position_label">
-             <property name="text">
-              <string> 3. Drone Pozisyonu: Bilinmiyor  </string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
-           <item>
-            <widget class="QLabel" name="drone1_velocity_label">
-             <property name="text">
-              <string>  1.Drone Hızı  </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="drone2_velocity_label">
-             <property name="text">
-              <string>  2.Drone Hızı  </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="drone3_velocity_label">
-             <property name="text">
-              <string>  3.Drone Hızı  </string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QComboBox" name="comboBox">
-           <item>
-            <property name="text">
-             <string>Drone1</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Drone2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Drone3</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QPushButton" name="command_window_button">
-           <property name="text">
-            <string>Open Command Window</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Paint Area</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_6"/>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -264,7 +284,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <resources/>
  <connections/>

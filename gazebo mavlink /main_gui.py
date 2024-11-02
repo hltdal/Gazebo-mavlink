@@ -2,18 +2,17 @@ import sys
 import subprocess
 import time
 import threading
-from nav_msgs.msg import Odometry
+from PyQt5 import QtWidgets
 from design import Ui_MainWindow
 from PyQt5.QtWidgets import *
-from geometry_msgs.msg import PoseStamped
-from pymavlink import mavutil
-import math
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from pymavlink_helper import MavlinkHelper
 from drone_class import Drone
 from individual_design import Ui_Dialog as Ui_Secondwindow
 from functions import drone_functions
 
-class LauncherAppFunctions(QMainWindow):
+class LauncherAppFunctions(QMainWindow, QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.main = Ui_MainWindow()
@@ -21,6 +20,7 @@ class LauncherAppFunctions(QMainWindow):
         self.appointments = drone_functions()
 
         self.main.setupUi(self)
+        self.initUI()
         self.working_directory = "~"
 
         self.drone1=Drone(udpin='127.0.0.1:14550')
@@ -38,6 +38,9 @@ class LauncherAppFunctions(QMainWindow):
         self.main.swarm_move_button.clicked.connect(self.swarm_move)
         self.main.emergency_button.clicked.connect(self.emergency)
         self.main.command_window_button.clicked.connect(self.open_second_window)
+
+    def initUI(self):
+        self.main.horizontalLayout_6.addWidget(CoordinatePlane())
 
     def init_environment(self):
         command = "roslaunch iq_sim multi_drone.launch"
@@ -188,6 +191,47 @@ class SecondWindow(QDialog):
 
         except Exception as e:
             print(f"Individual move emri verilirken hata oluştu{e}")
+
+class CoordinatePlane(FigureCanvas):
+    def __init__(self):
+        # Matplotlib figürü oluştur
+        self.fig = Figure()
+        self.ax = self.fig.add_subplot(111)
+        
+        # Ekseni ortalamak için çizgiler
+        self.ax.axhline(0, color='black', lw=1)
+        self.ax.axvline(0, color='black', lw=1)
+        
+        # Eksen sınırları
+        self.ax.set_xlim(-10, 10)
+        self.ax.set_ylim(-10, 10)
+        
+        super().__init__(self.fig)
+        
+        # Tıklanan noktalar ve tıklama sayısı
+        self.click_points = []
+        self.max_clicks = 3
+        
+        # Tıklama olayını bağla
+        self.fig.canvas.mpl_connect('button_press_event', self.on_click)
+
+    def on_click(self, event):
+        # Eksen üzerinde tıklanmış mı kontrol et
+        if event.inaxes == self.ax and len(self.click_points) < self.max_clicks:
+            x, y = event.xdata, event.ydata
+            self.click_points.append((x, y))
+
+            # Noktayı çizin
+            self.ax.plot(x, y, 'ro')  # Kırmızı noktalar
+            self.draw()  # Grafiği güncelle
+            
+            print(f"Tıklama {len(self.click_points)}: ({x:.2f}, {y:.2f})")
+
+            # Tıklama sınırına ulaşıldığında mesaj
+            if len(self.click_points) == self.max_clicks:
+                print("Üç tıklama tamamlandı!")
+        elif len(self.click_points) >= self.max_clicks:
+            print("Tıklama sınırına ulaşıldı!")
 
 def main():
     app = QApplication(sys.argv)
