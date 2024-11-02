@@ -7,12 +7,13 @@ from design import Ui_MainWindow
 from PyQt5.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import xml.etree.ElementTree as ET
 from pymavlink_helper import MavlinkHelper
 from drone_class import Drone
 from individual_design import Ui_Dialog as Ui_Secondwindow
 from functions import drone_functions
 
-class LauncherAppFunctions(QMainWindow, QtWidgets.QWidget):
+class LauncherAppFunctions(QMainWindow):
     def __init__(self):
         super().__init__()
         self.main = Ui_MainWindow()
@@ -20,13 +21,13 @@ class LauncherAppFunctions(QMainWindow, QtWidgets.QWidget):
         self.appointments = drone_functions()
 
         self.main.setupUi(self)
-        self.initUI()
         self.working_directory = "~"
 
-        self.drone1=Drone(udpin='127.0.0.1:14550')
-        self.drone2=Drone(udpin='127.0.0.1:14560')
-        self.drone3=Drone(udpin='127.0.0.1:14570')
+        self.drone1=Drone(name="drone1", udpin='127.0.0.1:14550')
+        self.drone2=Drone(name="drone2", udpin='127.0.0.1:14560')
+        self.drone3=Drone(name="drone3", udpin='127.0.0.1:14570')
         self.drones=[self.drone1,self.drone2,self.drone3]
+        self.initUI()
 
         self.main.init_environment_button.clicked.connect(self.init_environment)
         self.main.arm_button.clicked.connect(self.arm_all)
@@ -40,7 +41,7 @@ class LauncherAppFunctions(QMainWindow, QtWidgets.QWidget):
         self.main.command_window_button.clicked.connect(self.open_second_window)
 
     def initUI(self):
-        self.main.horizontalLayout_6.addWidget(CoordinatePlane())
+        self.main.horizontalLayout_6.addWidget(CoordinatePlane(self.drones))
 
     def init_environment(self):
         command = "roslaunch iq_sim multi_drone.launch"
@@ -193,46 +194,77 @@ class SecondWindow(QDialog):
             print(f"Individual move emri verilirken hata oluştu{e}")
 
 class CoordinatePlane(FigureCanvas):
-    def __init__(self):
+    def __init__(self, drones):
         # Matplotlib figürü oluştur
         self.fig = Figure()
         self.ax = self.fig.add_subplot(111)
-        
+        self.drones=drones
+
         # Ekseni ortalamak için çizgiler
         self.ax.axhline(0, color='black', lw=1)
         self.ax.axvline(0, color='black', lw=1)
-        
+
         # Eksen sınırları
         self.ax.set_xlim(-10, 10)
         self.ax.set_ylim(-10, 10)
-        
+
         super().__init__(self.fig)
-        
+
         # Tıklanan noktalar ve tıklama sayısı
         self.click_points = []
         self.max_clicks = 3
-        
+
         # Tıklama olayını bağla
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
 
     def on_click(self, event):
-        # Eksen üzerinde tıklanmış mı kontrol et
-        if event.inaxes == self.ax and len(self.click_points) < self.max_clicks:
-            x, y = event.xdata, event.ydata
-            self.click_points.append((x, y))
+        try:
+            # Eksen üzerinde tıklanmış mı kontrol et
+            if event.inaxes == self.ax and len(self.click_points) < self.max_clicks:
+                x, y = event.xdata, event.ydata
+                self.click_points.append((x, y))
 
-            # Noktayı çizin
-            self.ax.plot(x, y, 'ro')  # Kırmızı noktalar
-            self.draw()  # Grafiği güncelle
-            
-            print(f"Tıklama {len(self.click_points)}: ({x:.2f}, {y:.2f})")
+                # Noktayı çizin
+                self.ax.plot(x, y, 'ro')  # Kırmızı noktalar
+                self.draw()  # Grafiği güncelle
 
-            # Tıklama sınırına ulaşıldığında mesaj
-            if len(self.click_points) == self.max_clicks:
-                print("Üç tıklama tamamlandı!")
-        elif len(self.click_points) >= self.max_clicks:
-            print("Tıklama sınırına ulaşıldı!")
+                print(f"Tıklama {len(self.click_points)}: ({x:.2f}, {y:.2f})")
 
+                # Tıklama sınırına ulaşıldığında mesaj
+                if len(self.click_points) == self.max_clicks:
+                    print("Üç tıklama tamamlandı!")
+                    self.spawn_points(self.click_points)
+
+            elif len(self.click_points) >= self.max_clicks:
+                print("Tıklama sınırına ulaşıldı!")
+        except Exception as e:
+            print(f"Paint area'ya tıklama sırasında bir hata oluştu: {e}")
+
+    def spawn_points(self, points):
+        try:
+            for drone in self.drones:
+                drone.spawn_position_x=round(points[self.drones.index(drone)][0],2)
+                drone.spawn_position_y=round(points[self.drones.index(drone)][1],2)
+                print(f"{drone.name} noktası: ({drone.spawn_position_x}, {drone.spawn_position_y})")
+            print("Drone'lar belirlenen konumlara yerleştirildi")
+            file_path="/home/halit/catkin_ws/src/iq_sim/worlds/multi_drone.world"
+            tree=ET.parse(file_path)
+            root=tree.getroot()
+            # Drone'ların pozisyonlarını drone nesnelerinden alarak güncelle
+            for model in root.findall(".//model"):
+                name = model.get("name")
+                for drone in self.drones:
+                    if name == drone.name:  # Drone adı eşleşiyorsa pozisyon güncellenir
+                        pose = model.find("pose")
+                        if pose is not None:
+                            # Güncellenmiş pozisyonları drone nesnesinden al
+                            new_position = f"{drone.spawn_position_x} {drone.spawn_position_y} 0 0 0 0"
+                            pose.text = new_position
+            # Değişiklikleri kaydet
+            tree.write(file_path)
+            print("Pozisyonlar .world dosyasına kaydedildi.")
+        except Exception as e:
+            print(f"Spawn noktaları belirlenirken bir hata oluştu: {e}")
 def main():
     app = QApplication(sys.argv)
     launcher = LauncherAppFunctions()
