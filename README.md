@@ -380,7 +380,6 @@ tmux -2 attach-session -t sitl_session
 cd Gazebo-mavlink/gazebo mavlink 
 python3 main_gui.py
 ```
-### If you complete all this things succesfully you are such a freak :)
 
 
 
