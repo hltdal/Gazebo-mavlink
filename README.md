@@ -375,6 +375,9 @@ tmux split-window -v -t sitl_session 'sim_vehicle.py -v ArduCopter -f gazebo-dro
 tmux split-window -h -t sitl_session 'sim_vehicle.py -v ArduCopter -f gazebo-drone3 -I2'
 tmux -2 attach-session -t sitl_session
 ```
+```
+chmod +x multi_sitl.sh
+```
 **Run the program**
 ```
 cd Gazebo-mavlink/gazebo mavlink 
