@@ -25,21 +25,8 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 ```
 **If the above code fails, run it again**
 
-**Use pip (Python package installer) to install mavproxy:**
-```
-sudo pip install future pymavlink MAVProxy
-gedit ~/.bashrc
-```
-**Add these lines to end of ~/.bashrc (the file open in the text editor):**
-```
-export PATH=$PATH:$HOME/ardupilot/Tools/autotest
-export PATH=/usr/lib/ccache:$PATH
-```
-**Save and close the text editor.**
-
 **Reload ~/.bashrc and profile**
 ```
-. ~/.bashrc
 . ~/.profile
 ```
 ## Checkout Latest Copter Build
