@@ -141,8 +141,10 @@ source ~/.bashrc
 
 **Video Tutorial at https://youtu.be/N4XvVldWlXk**
 
-**Make sure Install ROS plugins for Gazebo:** 
-
+**Make sure Install ROS plugins for Gazebo:**
+```
+sudo apt install ros-noetic-gazebo-ros ros-noetic-gazebo-plugins
+```
 ### Launch Gazebo World
 ```
 roslaunch iq_sim runway.launch
