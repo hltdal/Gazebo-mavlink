@@ -34,6 +34,7 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 
 **Find the last version at link above(if 4.5.7 beta version then take version 4.5.6)**
 ```
+cd ardupilot
 git checkout Copter-4.5.6
 git submodule update --init --recursive
 ```
@@ -82,13 +83,19 @@ echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc
 
 ## Install ROS
 
-**Install ROS Noetic using the following instructions: http://wiki.ros.org/noetic/Installation/Ubuntu**
 
-**Do Desktop-full Install**
+```
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt install curl # if you haven't already installed curl
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+sudo apt update
+sudo apt install ros-noetic-desktop-full
 
-# 
-
-**Set Up Catkin workspace**
+source /opt/ros/noetic/setup.bash
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+## Set Up Catkin workspace**
 ```
 sudo apt-get install python3-wstool python3-rosinstall-generator python3-catkin-lint python3-pip python3-catkin-tools
 
