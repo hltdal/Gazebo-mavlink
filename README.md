@@ -206,7 +206,7 @@ echo "export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/catkin_ws/src/iq_sim/m
 ```
 **ect..**
 
-**We will test the drones we have defined by running them on runway.world**
+**We will test the drones we have defined by running them on multi_drone.world**
 
 **Replace `<model name="iris"> ...(everythng in between)...</model>` with**
 
@@ -232,7 +232,7 @@ echo "export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/catkin_ws/src/iq_sim/m
 ```
 **When you launch the world**
 ```
-roslaunch iq_sim runway.launch
+roslaunch iq_sim multi_drone.launch
 ```
 **Should see the world with three drones in it**
 
