@@ -309,7 +309,7 @@ SYSID_THISMAV 1
 ```
 # Install Github Simulation Repo
 ```
-git clone https://github.com/hltdal/Gazebo-mavlink 
+git clone https://github.com/hltdal/Gazebo-mavlink.git
 ```
 **Change multi_drone.launch**
 ```
