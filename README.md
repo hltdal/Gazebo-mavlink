@@ -178,6 +178,8 @@ echo "export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/catkin_ws/src/iq_sim/m
 ```
 ## Connecting Multiple Vehicles SITL to Gazebo
 
+**If there are other drone files, just check them**
+
 **Lets start by copying the drone1 folder in `iq_sim/models` and paste it as a copy. rename the folder to drone2.**
 
 **Then navigate to the drone2 folder open `model.config` and change the <name> tag to**
