@@ -48,7 +48,7 @@ sim_vehicle.py -w
 # Installing Gazebo and ArduPilot Plugin
 **Main links => https://github.com/Intelligent-Quads/iq_tutorials/blob/master/docs/installing_gazebo_arduplugin.md**
 
-**Video Tutorial at https://youtu.be/m7hPyJJmWmU**
+**Video Tutorial at https://youtu.be/1FpJvUVPxL0**
 
 ## Install Gazebo [18.04-20.04]
 ```
@@ -139,7 +139,7 @@ source ~/.bashrc
 
 **https://github.com/Intelligent-Quads/iq_tutorials/blob/master/docs/ros_intro.md**
 
-**Video Tutorial at https://youtu.be/N4XvVldWlXk**
+**Video Tutorial at https://youtu.be/1FpJvUVPxL0**
 
 **Make sure Install ROS plugins for Gazebo:**
 ```
@@ -154,19 +154,7 @@ roslaunch iq_sim runway.launch
 cp ~/catkin_ws/src/iq_sim/scripts/startsitl.sh ~
 ~/startsitl.sh
 ```
-### Intoduction to ROS Commandline Tools
-```
-rostopic list
-```
-**You should see some gazebo topics**
-
 **Now you can give orders to drone through follow steps in video**
-
-## Using MAVROS to get telemetry data from the FCU
-```
-roslaunch iq_sim apm.launch
-```
-**When you run "rostopic list" you should see a bunch of mavros topics**
 
 # Swarming Using Ardupilot
 
