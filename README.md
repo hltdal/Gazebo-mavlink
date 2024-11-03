@@ -156,6 +156,16 @@ cp ~/catkin_ws/src/iq_sim/scripts/startsitl.sh ~
 ```
 **Now you can give orders to drone through follow steps in video**
 
+# Guidance Navigation and Control
+
+**https://github.com/Intelligent-Quads/iq_tutorials/blob/master/docs/gnc_tutorial.md**
+
+**Video Tutorial Part 1 at https://youtu.be/eRAfeC8OFfs**
+```
+cd catkin_ws/src
+git clone https://github.com/Intelligent-Quads/iq_gnc.git
+
+```
 # Swarming Using Ardupilot
 
 **https://github.com/Intelligent-Quads/iq_tutorials/blob/master/docs/swarming_ardupilot.md**
