@@ -95,7 +95,7 @@ source /opt/ros/noetic/setup.bash
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
-## Set Up Catkin workspace**
+## Set Up Catkin workspace
 ```
 sudo apt-get install python3-wstool python3-rosinstall-generator python3-catkin-lint python3-pip python3-catkin-tools
 
@@ -113,6 +113,9 @@ rosinstall_generator --upstream mavros | tee /tmp/mavros.rosinstall
 rosinstall_generator mavlink | tee -a /tmp/mavros.rosinstall
 wstool merge -t src /tmp/mavros.rosinstall
 wstool update -t src
+
+sudo rosdep init
+rosdep update
 rosdep install --from-paths src --ignore-src --rosdistro `echo $ROS_DISTRO` -y
 
 catkin build
