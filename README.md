@@ -127,7 +127,6 @@ sudo ~/catkin_ws/src/mavros/mavros/scripts/install_geographiclib_datasets.sh
 ```
 cd ~/catkin_ws/src
 git clone https://github.com/Intelligent-Quads/iq_sim.git
-
 echo "GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/catkin_ws/src/iq_sim/models" >> ~/.bashrc
 ```
 **Build instructions**
