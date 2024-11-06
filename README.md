@@ -37,6 +37,17 @@ Tools/environment_install/install-prereqs-ubuntu.sh -y
 cd ardupilot
 git checkout Copter-4.5.6
 git submodule update --init --recursive
+
+sudo apt install python-matplotlib python-serial python-wxgtk3.0 python-wxtools python-lxml python-scipy python-opencv ccache gawk python-pip python-pexpect
+
+sudo pip install future pymavlink MAVProxy
+gedit ~/.bashrc
+
+#Add these lines to end of ~/.bashrc (the file open in the text editor):
+export PATH=$PATH:$HOME/ardupilot/Tools/autotest
+export PATH=/usr/lib/ccache:$PATH
+
+. ~/.bashrc
 ```
 ## Run SITL (Software In The Loop) once to set params:
 ```
@@ -50,12 +61,48 @@ sim_vehicle.py -w
 
 **Video Tutorial at https://youtu.be/1FpJvUVPxL0**
 
+## Install QGroundControl 
+
+```
+sudo usermod -a -G dialout $USER
+sudo apt-get remove modemmanager -y
+sudo apt install gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl -y
+sudo apt install libfuse2 -y
+sudo apt install libxcb-xinerama0 libxkbcommon-x11-0 libxcb-cursor-dev -y
+```
+To install QGroundControl:
+```
+https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl.AppImage
+```
+
+Install (and run) using the terminal commands:
+
+```
+chmod +x ./QGroundControl.AppImage
+./QGroundControl.AppImage
+(or double click)
+```
+Run SITL and connect with Q Ground
+```
+cd ~/ardupilot/ArduCopter/
+sim_vehicle.py
+```
+(bir konsolda sim vehicle diğer konsolda ./Qground çalışırsa otomatik bağlanıyorlar. Denemek istersen sürmek istersen oynayabilirsin)
+
 ## Install Gazebo [18.04-20.04]
 ```
+sudo apt update
+sudo apt install curl 
+curl --version
+```
+```
+sudo apt-get update
+sudo apt-get install lsb-release gnupg
 sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-
+curl https://packages.osrfoundation.org/gazebo.key | sudo apt-key add -
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-
+```
+```
 sudo apt update
 sudo apt-get install gazebo11 libgazebo11-dev
 ```
@@ -83,10 +130,9 @@ echo 'export GAZEBO_MODEL_PATH=~/ardupilot_gazebo/models' >> ~/.bashrc
 
 ## Install ROS
 
-
 ```
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-sudo apt install curl # if you haven't already installed curl
+
 curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
 sudo apt update
 sudo apt install ros-noetic-desktop-full
@@ -94,6 +140,12 @@ sudo apt install ros-noetic-desktop-full
 source /opt/ros/noetic/setup.bash
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
+
+sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+
+sudo apt install python3-rosdep
+sudo rosdep init
+rosdep update
 ```
 ## Set Up Catkin workspace
 ```
@@ -142,9 +194,7 @@ source ~/.bashrc
 **Video Tutorial at https://youtu.be/1FpJvUVPxL0**
 
 **Make sure Install ROS plugins for Gazebo:**
-```
-sudo apt install ros-noetic-gazebo-ros ros-noetic-gazebo-plugins
-```
+
 ### Launch Gazebo World
 ```
 roslaunch iq_sim runway.launch
@@ -153,6 +203,16 @@ roslaunch iq_sim runway.launch
 ```
 cp ~/catkin_ws/src/iq_sim/scripts/startsitl.sh ~
 ~/startsitl.sh
+```
+```
+bunları çalıştırdıktan sonra apm.launch'daki bağlantı
+"<arg name="fcu_url" default="udp://127.0.0.1:14550@5760" />"
+satırını yukarıdaki gibi yaptım ve çalıştırdım
+MAVROS kendi 14550 portundan ArduPilot'un 5760 portuna bağlanır.
+sim_vehicle.py -v ArduCopter -f gazebo-drone2 -I0
+bu komutu yazınca 
+SIM_VEHICLE: "mavproxy.py" "--out" "127.0.0.1:14550" "--master" "tcp:127.0.0.1:5760" "--sitl" "127.0.0.1:5501" "--console"
+diye bir mesaj verir. Buradan mavrosun ve ardupilotun hangi portları kullandığını görebilirsin
 ```
 **Now you can give orders to drone through follow steps in video**
 
@@ -165,6 +225,18 @@ cp ~/catkin_ws/src/iq_sim/scripts/startsitl.sh ~
 cd catkin_ws/src
 git clone https://github.com/Intelligent-Quads/iq_gnc.git
 
+catkin build
+source ~/.bashrc
+```
+```
+Run example code
+roslaunch iq_sim runway.launch
+# New Terminal
+./startsitl.sh
+# New Terminal
+roslaunch iq_sim apm.launch
+# New Terminal 
+rosrun iq_gnc square
 ```
 # Swarming Using Ardupilot
 
@@ -175,63 +247,10 @@ git clone https://github.com/Intelligent-Quads/iq_gnc.git
 **Add the models folder in the iq_sim repo to the gazebo models path**
 ```
 echo "export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/catkin_ws/src/iq_sim/models" >> ~/.bashrc
+. ~/.bashrc
 ```
 ## Connecting Multiple Vehicles SITL to Gazebo
 
-**If there are other drone files, just check them**
-
-**Lets start by copying the drone1 folder in `iq_sim/models` and paste it as a copy. rename the folder to drone2.**
-
-**Then navigate to the drone2 folder open `model.config` and change the <name> tag to**
-```
-<name>drone2</name>
-```
-**Open the `model.sdf` and change the model name to drone2 as well**
-
-**Scroll down to the ardupilot plugin and change**
-```
-<fdm_port_in>9002</fdm_port_in>
-<fdm_port_out>9003</fdm_port_out>
-```
-**to**
-```
-<fdm_port_in>9012</fdm_port_in>
-<fdm_port_out>9013</fdm_port_out>
-```
-**Each successive drone fdm port should be incremented by 10 ie.**
-
-**drone3**
-
-```
-<fdm_port_in>9022</fdm_port_in>
-<fdm_port_out>9023</fdm_port_out>
-```
-**ect..**
-
-**We will test the drones we have defined by running them on multi_drone.world**
-
-**Replace `<model name="iris"> ...(everythng in between)...</model>` with**
-
-```
-    <model name="drone1">
-    <pose> 2 0 0 0 0 0</pose>
-     <include>
-        <uri>model://drone1</uri>
-      </include>
-    </model>
-    <model name="drone2">
-    <pose> 4 0 0 0 0 0</pose>
-     <include>
-        <uri>model://drone2</uri>
-      </include>
-    </model>
-    <model name="drone3">
-    <pose> 8 0 0 0 0 0</pose>
-     <include>
-        <uri>model://drone3</uri>
-      </include>
-    </model>
-```
 **When you launch the world**
 ```
 roslaunch iq_sim multi_drone.launch
@@ -241,7 +260,19 @@ roslaunch iq_sim multi_drone.launch
 **Launch ardupilot terminals**
 ```
 sim_vehicle.py -v ArduCopter -f gazebo-iris --console -I0
+sim_vehicle.py -v ArduCopter -f gazebo-iris --console -I1
+sim_vehicle.py -v ArduCopter -f gazebo-iris --console -I2
 ```
+şimdi konsollardan drone lara teker teker emir verebilirsin
+
+örnek emir:
+
+mode guided
+
+arm throttle
+
+takeoff 10
+
 **It is recommended that you watch the video for a sample simulation (6.15 minutes)**
 
 # Launching Ardupilot SITL Instances with Unique Parameters
@@ -381,9 +412,6 @@ chmod +x multi_sitl.sh
 cd Gazebo-mavlink/gazebo mavlink 
 python3 main_gui.py
 ```
-
-
-
 
 # All sources are given below
 
