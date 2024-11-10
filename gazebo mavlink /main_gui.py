@@ -13,6 +13,8 @@ from drone_class import Drone
 from individual_design import Ui_Dialog as Ui_Secondwindow
 from functions import drone_functions
 
+# DENEMe
+
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
         super().__init__()
