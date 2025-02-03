@@ -12,6 +12,10 @@ from pymavlink_helper import MavlinkHelper
 from drone_class import Drone
 from individual_design import Ui_Dialog as Ui_Secondwindow
 from functions import drone_functions
+import rospy
+import cv2
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
@@ -52,6 +56,8 @@ class LauncherAppFunctions(QMainWindow):
             drone.mavlink_connection=self.pymavlink_helper.connection(drone.mavlink_connection, drone.udpin)
         print("Drone'lar bağlandı")
         self.continually_update_position()
+        self.MultiCameraSubscriber().run()
+
 
     def arm_all(self):
         self.appointments.arm(self.drones)
@@ -117,6 +123,46 @@ class LauncherAppFunctions(QMainWindow):
                 time.sleep(0.01)
         except Exception as e:
             print(f"Drone konumu alınırken hata oluştu: {e}")
+
+    class MultiCameraSubscriber:
+        def __init__(self):
+            rospy.init_node("multi_camera_subscriber", anonymous=True)
+            self.bridge = CvBridge()
+            
+            # Kameraların topic'leri
+            self.camera_topics = [
+                "/webcam_drone1/image_raw",
+                "/webcam_drone2/image_raw",
+                "/webcam_drone3/image_raw"
+            ]
+            
+            # Gelen görüntüleri saklamak için
+            self.images = {topic: None for topic in self.camera_topics}
+
+            # ROS Subscriber'ları başlat
+            for topic in self.camera_topics:
+                rospy.Subscriber(topic, Image, self.image_callback, callback_args=topic)
+
+        def image_callback(self, msg, topic):
+            """Gelen görüntüleri OpenCV formatına çevir ve sakla."""
+            try:
+                cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+                self.images[topic] = cv_image
+            except Exception as e:
+                rospy.logerr(f"Görüntü işleme hatası ({topic}): {str(e)}")
+
+        def run(self):
+            """Ana thread içinde OpenCV görüntüleme işlemini çalıştır."""
+            rate = rospy.Rate(10)  # 10 Hz
+            while not rospy.is_shutdown():
+                for topic, img in self.images.items():
+                    if img is not None:
+                        cv2.imshow(topic, img)
+                key = cv2.waitKey(1)
+                if key == 27:  # ESC tuşuna basılırsa çık
+                    break
+                rate.sleep()
+            cv2.destroyAllWindows()
 
     def continually_update_position(self):
         thread1 = threading.Thread(target=self.update_position)
