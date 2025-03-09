@@ -4,7 +4,9 @@ import time
 import threading
 from PyQt5 import QtWidgets
 from design import Ui_MainWindow
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import xml.etree.ElementTree as ET
@@ -14,8 +16,13 @@ from individual_design import Ui_Dialog as Ui_Secondwindow
 from functions import drone_functions
 import rospy
 import cv2
+import torch
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+from ultralytics import YOLO
+import numpy as np
+
+
 
 class LauncherAppFunctions(QMainWindow):
     def __init__(self):
@@ -56,8 +63,7 @@ class LauncherAppFunctions(QMainWindow):
             drone.mavlink_connection=self.pymavlink_helper.connection(drone.mavlink_connection, drone.udpin)
         print("Drone'lar bağlandı")
         self.continually_update_position()
-        self.MultiCameraSubscriber().run()
-
+        self.start_camera_viewer()
 
     def arm_all(self):
         self.appointments.arm(self.drones)
@@ -124,46 +130,6 @@ class LauncherAppFunctions(QMainWindow):
         except Exception as e:
             print(f"Drone konumu alınırken hata oluştu: {e}")
 
-    class MultiCameraSubscriber:
-        def __init__(self):
-            rospy.init_node("multi_camera_subscriber", anonymous=True)
-            self.bridge = CvBridge()
-            
-            # Kameraların topic'leri
-            self.camera_topics = [
-                "/webcam_drone1/image_raw",
-                "/webcam_drone2/image_raw",
-                "/webcam_drone3/image_raw"
-            ]
-            
-            # Gelen görüntüleri saklamak için
-            self.images = {topic: None for topic in self.camera_topics}
-
-            # ROS Subscriber'ları başlat
-            for topic in self.camera_topics:
-                rospy.Subscriber(topic, Image, self.image_callback, callback_args=topic)
-
-        def image_callback(self, msg, topic):
-            """Gelen görüntüleri OpenCV formatına çevir ve sakla."""
-            try:
-                cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-                self.images[topic] = cv_image
-            except Exception as e:
-                rospy.logerr(f"Görüntü işleme hatası ({topic}): {str(e)}")
-
-        def run(self):
-            """Ana thread içinde OpenCV görüntüleme işlemini çalıştır."""
-            rate = rospy.Rate(10)  # 10 Hz
-            while not rospy.is_shutdown():
-                for topic, img in self.images.items():
-                    if img is not None:
-                        cv2.imshow(topic, img)
-                key = cv2.waitKey(1)
-                if key == 27:  # ESC tuşuna basılırsa çık
-                    break
-                rate.sleep()
-            cv2.destroyAllWindows()
-
     def continually_update_position(self):
         thread1 = threading.Thread(target=self.update_position)
         thread2 = threading.Thread(target=self.update_velocity)
@@ -185,6 +151,71 @@ class LauncherAppFunctions(QMainWindow):
             self.second_window.exec_()
         except Exception as e:
             print(f"İkinci pencere açılırken bir hata oluştu: {e}")
+
+    def start_camera_viewer(self):
+        try:
+            detector = DroneCameraViewer()
+            detector.show_images()
+        except Exception as e:
+            print(f"Kamera görüntüleyici başlatılırken bir hata oluştu: {e}")
+
+class DroneCameraViewer:
+    def __init__(self):
+        rospy.init_node("drone_yolo_detector", anonymous=True)
+        
+        self.bridge = CvBridge()
+        self.model = YOLO("/home/halit/Desktop/face_detection/runs/detect/train2/weights/best.pt")
+
+        # Her drone için görüntü abonesi
+        self.image_sub1 = rospy.Subscriber("/webcam_drone1/image_raw", Image, self.callback1)
+        self.image_sub2 = rospy.Subscriber("/webcam_drone2/image_raw", Image, self.callback2)
+        self.image_sub3 = rospy.Subscriber("/webcam_drone3/image_raw", Image, self.callback3)
+
+        self.frame1, self.frame2, self.frame3 = None, None, None
+
+    def callback1(self, msg):
+        self.frame1 = self.process_frame(msg, "Drone 1")
+
+    def callback2(self, msg):
+        self.frame2 = self.process_frame(msg, "Drone 2")
+
+    def callback3(self, msg):
+        self.frame3 = self.process_frame(msg, "Drone 3")
+
+    def process_frame(self, msg, drone_name):
+        """Görüntüyü ROS'dan al, YOLO ile işle ve sonucu döndür."""
+        frame = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+
+        # YOLO ile tahmin yap
+        results = self.model(frame)
+
+        # Tahminleri çiz
+        for result in results:
+            for box in result.boxes:
+                x1, y1, x2, y2 = map(int, box.xyxy[0])  # Kutu koordinatları
+                confidence = box.conf[0].item()  # Güven skoru
+                label = f"{int(box.cls[0].item())} ({confidence:.2f})"
+
+                # Çizimleri ekle
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        return frame
+
+    def show_images(self):
+        while not rospy.is_shutdown():
+            if self.frame1 is not None:
+                cv2.imshow("Drone 1 - YOLO Detection", self.frame1)
+            if self.frame2 is not None:
+                cv2.imshow("Drone 2 - YOLO Detection", self.frame2)
+            if self.frame3 is not None:
+                cv2.imshow("Drone 3 - YOLO Detection", self.frame3)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:  # ESC tuşuna basıldığında çık
+                break
+
+        cv2.destroyAllWindows()
 
 class SecondWindow(QDialog):
     def __init__(self, selected_drone, pymavlink_helper):
